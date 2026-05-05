@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroLearn - AI-Powered Skill Courses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --accent: #f97316;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #14b8a6, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .card h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Form Section */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Buttons */
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(20, 184, 166, 0.3);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+            border: 2px solid var(--border);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border);
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(20, 184, 166, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Course Display */
+        .course-display {
+            display: none;
+        }
+
+        .course-display.active {
+            display: block;
+        }
+
+        .course-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .course-title {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Lessons */
+        .lessons-container {
+            margin-top: 30px;
+        }
+
+        .lesson {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lesson:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+
+        .lesson.active {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(249, 115, 22, 0.05));
+            border-left-color: var(--accent);
+        }
+
+        .lesson-number {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .lesson-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .lesson-duration {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.3s ease;
+        }
+
+        /* Lesson Content */
+        .lesson-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lesson-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-content h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .lesson-content p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .lesson-content ul,
+        .lesson-content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: #475569;
+        }
+
+        .lesson-content li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        /* Quiz */
+        .quiz-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            border-radius: 8px;
+        }
+
+        .quiz-section h4 {
+            color: #166534;
+            margin-bottom: 15px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 2px solid #dcfce7;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .quiz-option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        /* Certificate */
+        .certificate {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            border: 3px solid var(--accent);
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            margin-top: 30px;
+        }
+
+        .certificate.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .certificate-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .certificate-title {
+            font-size: 28px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .certificate-text {
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .certificate-button {
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            width: auto;
+            display: inline-block;
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+            font-size: 14px;
+        }
+
+        /* Category Pills */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            padding: 10px 16px;
+            background: var(--light);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        .category-btn:hover {
+            border-color: var(--primary);
+            background: rgba(20, 184, 166, 0.05);
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 MicroLearn</h1>
+            <p>AI-powered personalized micro-courses. Learn any skill in 5 lessons.</p>
+        </header>
+
+        <div class="content">
+            <!-- Left Column: Course Generator -->
+            <div class="card">
+                <h2>Create Your Course</h2>
+                
+                <div class="error-message" id="errorMessage"></div>
+
+                <div class="info-box">
+                    ℹ️ Pick a skill you want to learn. Our AI will generate a personalized 5-lesson course just for you.
+                </div>
+
+                <div class="form-group">
+                    <label>Select a Category</label>
+                    <div class="categories">
+                        <button class="category-btn active" onclick="selectCategory(this, 'AI Tools')">🤖 AI Tools</button>
+                        <button class="category-btn" onclick="selectCategory(this, 'Sports')">⚽ Sports</button>
+                        <button class="category-btn" onclick="selectCategory(this, 'Cryptocurrency')">₿ Crypto</button>
+                        <button class="category-btn" onclick="selectCategory(this, 'Skill Trades')">🔧 Trades</button>
+                    </div>
+                    <input type="hidden" id="category" value="AI Tools">
+                </div>
+
+                <div class="form-group">
+                    <label for="skillInput">What skill do you want to learn? *</label>
+                    <input type="text" id="skillInput" placeholder="e.g., Instagram Marketing, Crypto Trading, Woodworking..." required>
+                </div>
+
+                <button id="generateBtn" onclick="generateCourse()">Generate My Course</button>
+                <button class="btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+
+            <!-- Right Column: Course Display -->
+            <div class="card">
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p class="loading-text">✨ Generating your personalized course...</p>
+                </div>
+
+                <div class="course-display" id="courseDisplay">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Course Progress</span>
+                            <span id="progressText">0/5</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="course-header">
+                        <div class="course-title" id="courseTitle"></div>
+                        <div class="course-meta">
+                            <span id="courseMeta"></span>
+                        </div>
+                    </div>
+
+                    <div class="lessons-container" id="lessonsContainer"></div>
+
+                    <div id="lessonContent"></div>
+
+                    <div class="certificate" id="certificate">
+                        <div class="certificate-icon">🏆</div>
+                        <div class="certificate-title">Congratulations!</div>
+                        <div class="certificate-text">You've completed <strong id="certCourse"></strong></div>
+                        <button class="certificate-button" onclick="downloadCertificate()">📥 Download Certificate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCourse = null;
+        let selectedLesson = 0;
+        let completedLessons = new Set();
+        let selectedCategory = 'AI Tools';
+
+        // Get the API base URL (works in development and production)
+        const API_URL = window.location.origin;
+
+        function selectCategory(btn, category) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedCategory = category;
+            document.getElementById('category').value = category;
+        }
+
+        async function generateCourse() {
+            const skill = document.getElementById('skillInput').value.trim();
+            const category = document.getElementById('category').value;
+
+            if (!skill) {
+                showError('Please enter the skill you want to learn.');
+                return;
+            }
+
+            showLoading(true);
+            clearError();
+            document.getElementById('generateBtn').disabled = true;
+
+            try {
+                const response = await fetch('/api/generate-course', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        skill: skill,
+                        category: category
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to generate course');
+                }
+
+                const data = await response.json();
+                currentCourse = data;
+                selectedLesson = 0;
+                completedLessons.clear();
+
+                displayCourse();
+                showLoading(false);
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error generating course: ' + error.message);
+                showLoading(false);
+            } finally {
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+
+        function displayCourse() {
+            const display = document.getElementById('courseDisplay');
+            display.classList.add('active');
+
+            document.getElementById('courseTitle').textContent = currentCourse.title;
+            document.getElementById('courseMeta').textContent = `${currentCourse.lessons.length} lessons • ${currentCourse.duration}`;
+
+            const lessonsHTML = currentCourse.lessons.map((lesson, index) => `
+                <div class="lesson ${index === 0 ? 'active' : ''}" onclick="selectLesson(${index})">
+                    <div class="lesson-number">Lesson ${lesson.number}</div>
+                    <div class="lesson-title">${lesson.title}</div>
+                    <div class="lesson-duration">${lesson.duration}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('lessonsContainer').innerHTML = lessonsHTML;
+            displayLesson(0);
+        }
+
+        function selectLesson(index) {
+            selectedLesson = index;
+            document.querySelectorAll('.lesson').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+            displayLesson(index);
+        }
+
+        function displayLesson(index) {
+            const lesson = currentCourse.lessons[index];
+            const contentHTML = `
+                <div class="lesson-content active">
+                    <h3>${lesson.title}</h3>
+                    <p>${lesson.content}</p>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <strong style="color: #1e40af;">Key Points:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            ${lesson.keyPoints.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="quiz-section">
+                        <h4>📝 Quick Check</h4>
+                        <p>${lesson.quiz.question}</p>
+                        ${lesson.quiz.options.map((option, i) => `
+                            <label class="quiz-option">
+                                <input type="radio" name="quiz-${index}" value="${i}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                        <button onclick="completeLesson(${index})" style="margin-top: 15px; background: #22c55e;">✓ Complete Lesson</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('lessonContent').innerHTML = contentHTML;
+            updateProgress();
+        }
+
+        function completeLesson(index) {
+            completedLessons.add(index);
+            updateProgress();
+
+            if (completedLessons.size === currentCourse.lessons.length) {
+                showCertificate();
+            } else {
+                // Move to next lesson
+                if (index < currentCourse.lessons.length - 1) {
+                    setTimeout(() => selectLesson(index + 1), 500);
+                }
+            }
+        }
+
+        function updateProgress() {
+            const progress = (completedLessons.size / currentCourse.lessons.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${completedLessons.size}/${currentCourse.lessons.length}`;
+        }
+
+        function showCertificate() {
+            document.getElementById('certificate').classList.add('active');
+            document.getElementById('certCourse').textContent = currentCourse.title;
+        }
+
+        function downloadCertificate() {
+            const cert = `
+CERTIFICATE OF COMPLETION
+═══════════════════════════
+
+This certifies that you have successfully completed:
+
+${currentCourse.title}
+
+Date: ${new Date().toLocaleDateString()}
+Status: COMPLETED ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generated by MicroLearn - AI-Powered Courses
+            `;
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(cert));
+            element.setAttribute('download', `${currentCourse.title}-Certificate.txt`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.classList.add('active');
+        }
+
+        function clearError() {
+            document.getElementById('errorMessage').classList.remove('active');
+        }
+
+        function clearAll() {
+            document.getElementById('skillInput').value = '';
+            document.getElementById('courseDisplay').classList.remove('active');
+            currentCourse = null;
+            completedLessons.clear();
+        }
+    </script>
+</body>
+</html>
