@@ -1,0 +1,12 @@
+{
+  "name": "microlearn-course-generator",
+  "version": "1.0.0",
+  "description": "AI-powered microlearning course generator",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Frontend only'",
+    "start": "echo 'Deployed on Vercel'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
