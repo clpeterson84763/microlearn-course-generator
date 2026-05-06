@@ -731,8 +731,17 @@
         let coursesGeneratedThisMonth = 0;
         const MAX_FREE_COURSES = 1;
 
+        // Check for owner bypass
+        const urlParams = new URLSearchParams(window.location.search);
+        const isOwner = urlParams.get('pro') === 'clpeterson';
+
         // Initialize from localStorage
         function initializeApp() {
+            // Owner gets unlimited access
+            if (isOwner) {
+                localStorage.setItem('isProUser', 'true');
+            }
+
             const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
             const lastMonth = localStorage.getItem('lastMonth');
             
@@ -756,8 +765,10 @@
         }
 
         async function generateCourse() {
+            const isProUser = localStorage.getItem('isProUser') === 'true' || isOwner;
+
             // Check if user has free courses remaining
-            if (coursesGeneratedThisMonth >= MAX_FREE_COURSES) {
+            if (!isProUser && coursesGeneratedThisMonth >= MAX_FREE_COURSES) {
                 showPaywall();
                 return;
             }
@@ -813,8 +824,14 @@
         }
 
         function updateCoursesRemaining() {
-            const remaining = Math.max(0, MAX_FREE_COURSES - coursesGeneratedThisMonth);
-            document.getElementById('coursesRemaining').textContent = remaining;
+            const isProUser = localStorage.getItem('isProUser') === 'true' || isOwner;
+            if (isProUser) {
+                document.getElementById('coursesRemaining').parentElement.style.background = 'linear-gradient(135deg, #f97316, #ff8c00)';
+                document.getElementById('coursesRemaining').parentElement.innerHTML = '👑 Pro Account - Unlimited Courses';
+            } else {
+                const remaining = Math.max(0, MAX_FREE_COURSES - coursesGeneratedThisMonth);
+                document.getElementById('coursesRemaining').textContent = remaining;
+            }
         }
 
         function showPaywall() {
