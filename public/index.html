@@ -614,7 +614,7 @@
         <header>
             <h1>🎓 MicroLearn</h1>
             <p>AI-powered personalized micro-courses. Learn any skill in 5 lessons.</p>
-            <div class="free-courses-badge">
+            <div class="free-courses-badge" id="badgeContainer">
                 📊 <span id="coursesRemaining">1</span> Free Course Remaining This Month
             </div>
         </header>
@@ -825,9 +825,10 @@
 
         function updateCoursesRemaining() {
             const isProUser = localStorage.getItem('isProUser') === 'true' || isOwner;
+            const badge = document.getElementById('badgeContainer');
             if (isProUser) {
-                document.getElementById('coursesRemaining').parentElement.style.background = 'linear-gradient(135deg, #f97316, #ff8c00)';
-                document.getElementById('coursesRemaining').parentElement.innerHTML = '👑 Pro Account - Unlimited Courses';
+                badge.style.background = 'linear-gradient(135deg, #f97316, #ff8c00)';
+                badge.innerHTML = '👑 Pro Account - Unlimited Courses';
             } else {
                 const remaining = Math.max(0, MAX_FREE_COURSES - coursesGeneratedThisMonth);
                 document.getElementById('coursesRemaining').textContent = remaining;
